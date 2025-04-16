@@ -39,7 +39,7 @@ Created security groups (e.g., IT-SecurityGroup, HR-SGroup) for permission assig
   - Universal: Cross-domain (forests)
   - Domain Local: Within domain only
 
-📸 [Insert Screenshot: Security group creation window] — `images/Security-Group-Creation.png`
+📸 [Insert Screenshot: Security group creation window] — images/Security-Group-Creation.png
 📸 [Insert Screenshot: Group scope options dropdown] — `images/Group-Scope-Options.png`
 
 #### Users
