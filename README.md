@@ -18,7 +18,7 @@ Set the network adapter to "Internal Network."
 
 Assigned a static IP address.
 
-![VM Settings](images/virtualbox vm settings windows server desktop.png)
+![VM Settings](images/virtualbox-vm -settings_ windows-server-desktop.png)
 
 Active Directory: OUs, Users, Groups & Permissions
 
