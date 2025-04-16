@@ -104,7 +104,7 @@ I created another GPO named Drive Mapping and edited it under:
 User Configuration → Preferences → Windows Settings → Drive Maps
 I set it to map a drive with:
 Path: \\ServerName\SharedFolder
-Drive Letter: E:
+Drive Letter: S:
 Action: Create (because I wanted it to show up every time they log in)
 creenshot Placeholder: [Screenshot of drive map creation dialog]
 
@@ -195,7 +195,7 @@ I moved the computer to the USA > Computers OU using Active Directory Users and 
 I added a description to the computer object for asset tracking.
 
 Screenshot Placeholder:
-[Insert Screenshot: Active Directory Users and Computers showing the computer account under default "Computers" container]
+[Insert Screenshot: Active Directory Users and Computers showing the computer account under default Computers container]
 
 🔹 5. GPO Testing and Validation
 To test the "Restrict Control Panel" policy:
@@ -211,7 +211,7 @@ Waited for the policy update confirmation.
 
 Re-attempted to access Control Panel — access was denied as expected.
 Screenshot Placeholder:
-[Insert Screenshot: Command Prompt window showing gpupdate /force output]
+[Insert Screenshot: Command Prompt window showing gpupdate force output]
 [Insert Screenshot: Access Denied message on Control Panel after GPO application]
 ✅ Result: GPO successfully applied and functional.
 
@@ -437,20 +437,6 @@ Set to: IT Department
 
 📸 [Insert Screenshot – Remote Desktop Logon Policy]
 
-✅ Testing
-Logged out from admin
-
-Tried logging in as an HR user directly to the server → Denied
-
-Tried using RDP as an HR user → Denied
-
-Tried using RDP as an IT user → Successful
-
-📸 [Insert Screenshot – Logon Denied (HR)]
-📸 [Insert Screenshot – RDP Success (IT)]
-
-
-
 In this part of the lab, I configured Fine-Grained Password Policies (FGPP) using the Active Directory Administrative Center (ADAC) instead of Group Policy. FGPP allows me to enforce different password policies for different users or groups, giving more flexibility and control over account security.
 
 For example, I applied stricter password requirements to IT Admins, while giving more lenient rules to Standard Users.
@@ -477,7 +463,7 @@ Step-by-Step:
 Opened Active Directory Administrative Center
 
 On the left pane, I clicked my domain name:
-e.g., corp.local
+Patrick.com
 
 Navigated to:
 System → Password Settings Container
@@ -554,22 +540,6 @@ User policy has precedence 2
 
 Any user in both groups will receive the Admin policy.
 
-✅ Testing the Policy
-I created two test accounts:
+ [Insert Screenshot – Password Rejected Due to FGPP]
 
-admin.test → Member of IT Admins
-
-user.test → Member of Standard Users
-
-I tried changing their passwords to:
-
-A short password: Test123! → Rejected for admin.test
-
-A longer password: ComplexPassword2024! → Accepted for admin.test
-
-A 10-character password → Accepted for user.test
-
-📸 [Insert Screenshot – Password Rejected Due to FGPP]
-
-📸 [Insert Screenshot – Password Accepted with FGPP]
 
