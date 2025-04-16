@@ -1,218 +1,182 @@
-Installing Windows Server in VirtualBox and Configuring Active Directory
+**Installing Windows Server in VirtualBox and Configuring Active Directory**
 
 Before configuring Active Directory, I set up a virtualized lab using Oracle VirtualBox.
 
-VM Setup in VirtualBox
+---
 
-Created a new Virtual Machine.
+### VM Setup in VirtualBox
+- Created a new Virtual Machine.
+- Selected the Windows Server 2022 ISO as the installation medium.
+- Assigned 2 GB RAM and 1 CPU core.
+- Installed Windows Server OS with Desktop Experience.
+- Set a secure administrator password.
+- Set the network adapter to "Internal Network."
+- Assigned a static IP address.
 
-Selected the Windows Server 2022 ISO as the installation medium.
+![VM Settings](images/VirtualBox-VM-Settings-Windows-Server-Desktop.png)
 
-Assigned 2 GB RAM and 1 CPU core.
+---
 
-Installed Windows Server OS with Desktop Experience.
+### Active Directory: OUs, Users, Groups & Permissions
 
-Set a secure administrator password.
-
-Set the network adapter to "Internal Network."
-
-Assigned a static IP address.
-
-![VM Settings](images/virtualbox-vm -settings_ windows-server-desktop.png)
-
-Active Directory: OUs, Users, Groups & Permissions
-
-Organizational Units (OUs)
-
+#### Organizational Units (OUs)
 I structured Active Directory with top-level OUs per region (USA, Europe, Asia) and created sub-OUs inside each for Users, Computers, and Servers.
 
-Example:
+- **Example:**
+  - USA > Users
+  - USA > Computers
+  - USA > Servers
 
-USA > Users
+📸 [Insert Screenshot: Creation of USA, Europe, Asia OUs] — `images/OU-Creation-USA-Europe-Asia.png`
+📸 [Insert Screenshot: Sub-OUs under USA] — `images/Sub-OUs-USA.png`
+📸 [Insert Screenshot: Populated OUs with user and computer objects] — `images/Objects-In-OUs.png`
 
-USA > Computers
-
-USA > Servers
-
-📸 [Insert Screenshot: Creation of USA, Europe, Asia OUs] — images/ou creation usa europe asia.png
-📸 [Insert Screenshot: Sub-OUs under USA] — images/sub ou usa.png
-📸 [Insert Screenshot: Populated OUs with user and computer objects] — images/objects in ous.png
-
-Groups and Group Scopes
-
+#### Groups and Group Scopes
 Created security groups (e.g., IT-SecurityGroup, HR-SGroup) for permission assignment.
 
-Group Scopes:
+- Group Scopes:
+  - Global: Same domain
+  - Universal: Cross-domain (forests)
+  - Domain Local: Within domain only
 
-Global: Same domain
+📸 [Insert Screenshot: Security group creation window] — `images/Security-Group-Creation.png`
+📸 [Insert Screenshot: Group scope options dropdown] — `images/Group-Scope-Options.png`
 
-Universal: Cross-domain (forests)
+#### Users
+Manually created users `Joshua` and `vboxuser`, and assigned them to OUs and groups under the domain `Patrick.com`.
+- Example: `joshua@patrick.com`, `vboxuser@patrick.com`
+- Password policy: Complexity, expiration, lockout settings enforced.
 
-Domain Local: Within domain only
+📸 [Insert Screenshot: User creation wizard] — `images/User-Creation-Wizard.png`
+📸 [Insert Screenshot: Password policy settings or Fine-Grained Policy summary] — `images/Password-Policy-Settings.png`
+📸 [Insert Screenshot: User group membership tab] — `images/User-Group-Membership.png`
 
-📸 [Insert Screenshot: Security group creation window] — images/security group creation.png
-📸 [Insert Screenshot: Group scope options dropdown] — images/group scope options.png
+---
 
-Users
+### Group Policy Objects (GPOs)
 
-Manually created users Joshua and vboxuser, and assigned them to OUs and groups under the domain Patrick.com.
-
-Example: joshua@patrick.com, vboxuser@patrick.com
-
-Password policy: Complexity, expiration, lockout settings enforced.
-
-📸 [Insert Screenshot: User creation wizard] — images/user creation wizard.png
-📸 [Insert Screenshot: Password policy settings or Fine-Grained Policy summary] — images/password policy settings.png
-📸 [Insert Screenshot: User group membership tab] — images/user group membership.png
-
-Group Policy Objects (GPOs)
-
-GPO 1: Password Policy + Account Lockout Policy
-
-Edited the Default Domain Policy to apply a secure password policy to all domain users in Patrick.com:
-
-Minimum password length: 12
-
-Enforced complexity and history
-
-Max age: 90 days
+#### GPO 1: Password Policy + Account Lockout Policy
+Edited the Default Domain Policy to apply a secure password policy to all domain users in `Patrick.com`:
+- Minimum password length: 12
+- Enforced complexity and history
+- Max age: 90 days
 
 Also configured lockout policy:
-
-Threshold: 3 failed logins
-
-Lockout duration: 30 minutes
-
-Reset counter: 30 minutes
+- Threshold: 3 failed logins
+- Lockout duration: 30 minutes
+- Reset counter: 30 minutes
 
 Location:
-Computer Configuration → Policies → Windows Settings → Security Settings → Account Policies
+`Computer Configuration → Policies → Windows Settings → Security Settings → Account Policies`
 
-📸 [Screenshot of configured password policy settings] — images/gpo password policy.png
-📸 [Insert Screenshot – Password Rejected Due to Weakness] — images/test weak password rejected.png
-📸 [Insert Screenshot – Successful Strong Password Change] — images/test strong password accepted.png
-📸 [Insert Screenshot – Account Lockout Policy Settings] — images/account lockout policy.png
-📸 [Insert Screenshot – Account Locked Message] — images/account locked message.png
+📸 [Screenshot of configured password policy settings] — `images/GPO-Password-Policy.png`
+📸 [Insert Screenshot – Password Rejected Due to Weakness] — `images/Test-Weak-Password-Rejected.png`
+📸 [Insert Screenshot – Successful Strong Password Change] — `images/Test-Strong-Password-Accepted.png`
+📸 [Insert Screenshot – Account Lockout Policy Settings] — `images/Account-Lockout-Policy.png`
+📸 [Insert Screenshot – Account Locked Message] — `images/Account-Locked-Message.png`
 
-GPO 2: Drive Mapping
-
-Automatically maps S: to \\ServerName\SharedFolder
+#### GPO 2: Drive Mapping
+Automatically maps `S:` to `\\ServerName\SharedFolder`
 
 Location:
-User Configuration → Preferences → Windows Settings → Drive Maps
+`User Configuration → Preferences → Windows Settings → Drive Maps`
 
-📸 [Screenshot of drive map creation dialog] — images/gpo drive map.png
+📸 [Screenshot of drive map creation dialog] — `images/GPO-Drive-Map.png`
 
-GPO 3: Desktop Wallpaper
+#### GPO 3: Desktop Wallpaper
+Applies a uniform wallpaper via `\\ServerName\Wallpapers\company_wallpaper.jpg`
 
-Applies a uniform wallpaper via \\ServerName\Wallpapers\company_wallpaper.jpg
+📸 [Screenshot showing the wallpaper path configuration] — `images/GPO-Wallpaper-Settings.png`
 
-📸 [Screenshot showing the wallpaper path configuration] — images/gpo wallpaper settings.png
-
-GPO 4: Restrict Control Panel Access
-
+#### GPO 4: Restrict Control Panel Access
 Prevents users from accessing system settings.
 
-📸 [Screenshot showing the restriction setting enabled] — images/gpo restrict control panel.png
+📸 [Screenshot showing the restriction setting enabled] — `images/GPO-Restrict-Control-Panel.png`
 
-GPO 5: Disable USB Storage Devices
-
+#### GPO 5: Disable USB Storage Devices
 Blocks access to USB drives.
 
-📸 [Screenshot showing the deny all access setting] — images/gpo disable usb.png
+📸 [Screenshot showing the deny all access setting] — `images/GPO-Disable-USB.png`
 
-### GPO Assignments
+#### GPO Assignments:
+| GPO Name               | Type                  | Linked OU       |
+|------------------------|-----------------------|-----------------|
+| Restrict Control Panel | User Configuration    | USA > Users     |
+| Password Policy        | Computer Configuration| USA > Computers |
+| Drive Mapping          | User Configuration    | USA > Users     |
+| Disable USB Devices    | Computer Configuration| USA > Computers |
+| Set Wallpaper          | User Configuration    | USA > Users     |
 
-| GPO Name               | Configuration Type     | Linked OU        |
-|------------------------|------------------------|------------------|
-| Restrict Control Panel | User Configuration     | USA > Users      |
-| Password Policy        | Computer Configuration | USA > Computers  |
-| Drive Mapping          | User Configuration     | USA > Users      |
-| Disable USB Devices    | Computer Configuration | USA > Computers  |
-| Set Wallpaper          | User Configuration     | USA > Users      |
+#### GPO Testing
+After joining the Windows 10 client machine named `client` to the domain and moving its computer object to `USA > Computers`, I tested GPOs via `gpupdate /force`.
 
-GPO Testing
+📸 [Insert Screenshot: Active Directory Users and Computers showing the computer account under default Computers container] — `images/ADUC-Computer-Moved.png`
+📸 [Insert Screenshot: Command Prompt window showing gpupdate force output] — `images/GPUpdate-Command.png`
+📸 [Insert Screenshot: Access Denied message on Control Panel after GPO application] — `images/Control-Panel-Access-Denied.png`
 
-After joining the Windows 10 client machine named client to the domain and moving its computer object to USA > Computers, I tested GPOs via gpupdate /force.
+---
 
-📸 [Insert Screenshot: Active Directory Users and Computers showing the computer account under default Computers container] — images/aduc computer moved.png
-📸 [Insert Screenshot: Command Prompt window showing gpupdate force output] — images/gpupdate command.png
-📸 [Insert Screenshot: Access Denied message on Control Panel after GPO application] — images/control panel access denied.png
+### File Server Resource Manager (FSRM)
 
-File Server Resource Manager (FSRM)
-
-Installation
-
+#### Installation
 Installed FSRM role via Server Manager > Add Roles and Features.
 
-📸 [Insert Screenshot: Add Roles and Features wizard with File Server Resource Manager selected] — images/fsrm installation.png
+📸 [Insert Screenshot: Add Roles and Features wizard with File Server Resource Manager selected] — `images/FSRM-Installation.png`
 
-Quota Management
+#### Quota Management
+- Applied 10 GB quota to `C:\Shares\DeptShared`
+- Notification at 80% usage
 
-Applied 10 GB quota to C:\Shares\DeptShared
+📸 [Insert Screenshot: Quota path selection for shared folder] — `images/FSRM-Quota-Path.png`
+📸 [Insert Screenshot: Custom quota definition page] — `images/FSRM-Custom-Quota.png`
+📸 [Insert Screenshot: Notification threshold settings screen] — `images/FSRM-Threshold-Notification.png`
 
-Notification at 80% usage
+#### File Screening
+- Blocked Audio, Video, Executables, Compressed Files, etc.
+- Allowed only Document and Text Files
+- Named policy: `Shared_Dept_FileScreen_Policy`
 
-📸 [Insert Screenshot: Quota path selection for shared folder] — images/fsrm quota path.png
-📸 [Insert Screenshot: Custom quota definition page] — images/fsrm custom quota.png
-📸 [Insert Screenshot: Notification threshold settings screen] — images/fsrm threshold notification.png
+📸 [Insert Screenshot: File screen folder path selection] — `images/FSRM-File-Screen-Path.png`
+📸 [Insert Screenshot: File types selected for blocking] — `images/FSRM-File-Groups.png`
+📸 [Insert Screenshot: Custom file screen template with selected settings] — `images/FSRM-Policy-Summary.png`
 
-File Screening
+---
 
-Blocked Audio, Video, Executables, Compressed Files, etc.
+### User Rights Assignment
 
-Allowed only Document and Text Files
-
-Named policy: Shared_Dept_FileScreen_Policy
-
-📸 [Insert Screenshot: File screen folder path selection] — images/fsrm file screen path.png
-📸 [Insert Screenshot: File types selected for blocking] — images/fsrm file groups.png
-📸 [Insert Screenshot: Custom file screen template with selected settings] — images/fsrm policy summary.png
-
-User Rights Assignment
-
-What I Did
-
-Denied log on locally for HR group
-
-Allowed RDP for IT group
+#### What I Did
+- Denied log on locally for HR group
+- Allowed RDP for IT group
 
 Location:
-Computer Configuration → Policies → Windows Settings → Security Settings → Local Policies → User Rights Assignment
+`Computer Configuration → Policies → Windows Settings → Security Settings → Local Policies → User Rights Assignment`
 
-📸 [Insert Screenshot – Deny Log On Locally Policy] — images/user rights deny logon.png
-📸 [Insert Screenshot – Remote Desktop Logon Policy] — images/user rights allow rdp.png
+📸 [Insert Screenshot – Deny Log On Locally Policy] — `images/User-Rights-Deny-Logon.png`
+📸 [Insert Screenshot – Remote Desktop Logon Policy] — `images/User-Rights-Allow-RDP.png`
 
-Fine-Grained Password Policies (FGPP)
+---
 
-Admin Password Policy
+### Fine-Grained Password Policies (FGPP)
 
-Name: Admin_PasswordPolicy
+#### Admin Password Policy
+- Name: `Admin_PasswordPolicy`
+- Min length: 15
+- Lockout threshold: 3
+- Group: IT Admins
 
-Min length: 15
+📸 [Insert Screenshot – Admin Policy Settings Filled In] — `images/Admin-Policy-Settings-Filled-In.png`
+📸 [Insert Screenshot – Adding IT Admins Group to the Policy] — `images/Add-IT-Group-To-Policy.png`
 
-Lockout threshold: 3
+#### Standard Users Policy
+- Name: `StandardUsers_PasswordPolicy`
+- Min length: 10
+- Group: Domain Users
 
-Group: IT Admins
+📸 [Insert Screenshot – Standard Users Policy Settings] — `images/Standard-Users-Policy-Settings.png`
 
-📸 [Insert Screenshot – Admin Policy Settings Filled In] — images/fgpp admin settings.png
-📸 [Insert Screenshot – Adding IT Admins Group to the Policy] — images/fgpp add it group.png
+#### Precedence Notes
+- Lower number = higher priority
+- Users in both policies get `Admin_PasswordPolicy`
 
-Standard Users Policy
-
-Name: StandardUsers_PasswordPolicy
-
-Min length: 10
-
-Group: Domain Users
-
-📸 [Insert Screenshot – Standard Users Policy Settings] — images/fgpp standard user.png
-
-Precedence Notes
-
-Lower number = higher priority
-
-Users in both policies get Admin_PasswordPolicy
-
-📸 [Insert Screenshot – Password Rejected Due to FGPP] — images/fgpp policy precedence.png
+📸 [Insert Screenshot – Password Rejected Due to FGPP] — `images/FGPP-Policy-Precedence.png`
 
