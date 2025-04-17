@@ -59,7 +59,15 @@ I structured Active Directory with top-level OUs per region (USA, Europe, Asia) 
 
 ![Creation of USA, Europe, Asia OUs](images/Creation-of-USA,-Europe,-Asia-OUs.png)
 ![Sub-OUs under USA](images/Sub-OUs-under-USA.png)
+
+#### Users
+Manually created users `Joshua` and `vboxuser`, and assigned them to OUs and groups under the domain `Patrick.com`.
+- Example: `joshua@patrick.com`, `vboxuser@patrick.com`
+- Password policy: Complexity, expiration, lockout settings enforced.
+
+![User creation wizard](images/User-creation-wizard.png)
 ![Populated OUs with user and computer objects](images/Populated-OUs-with-user-and-computer-objects.png)
+![Computer account moved](images/Active-Directory-Users-and-Computers-showing-the-computer-account-under-default-Computers--container.png)
 
 #### Groups and Group Scopes
 Created security groups (e.g., IT-SecurityGroup, HR-SGroup) for permission assignment.
@@ -69,17 +77,6 @@ Created security groups (e.g., IT-SecurityGroup, HR-SGroup) for permission assig
   - Universal: Cross-domain (forests)
   - Domain Local: Within domain only
 
-
-
-
-#### Users
-Manually created users `Joshua` and `vboxuser`, and assigned them to OUs and groups under the domain `Patrick.com`.
-- Example: `joshua@patrick.com`, `vboxuser@patrick.com`
-- Password policy: Complexity, expiration, lockout settings enforced.
-
-![User creation wizard](images/User-creation-wizard.png)
-
-![User group membership tab](images/Navigating-to-Password-Settings-Container.png)
 
 #### Network Configuration
 - Assigned static IP in the same subnet as the domain controller
@@ -126,10 +123,6 @@ Computer Configuration → Policies → Windows Settings → Security Settings �
 - Reset counter: 30 minutes
 ![Account Lockout Policy Settings](images/Account-Lockout-Policy-Settings.png)
 
-
-![Password Rejected Due to Weakness](images/Password-Rejected-Due-to-FGPP.png)
-![Successful Strong Password Change](images/Successful-Strong-Password-Change.png)
-
 ![Account Locked Message](images/Account-Locked-Message.png)
 
 #### GPO 2: Drive Mapping
@@ -157,12 +150,22 @@ Blocks access to USB drives.
 
 
 
-#### GPO Testing
-After joining the Windows 10 client machine named `client` to the domain and moving its computer object to `USA > Computers`, I tested GPOs via `gpupdate /force`.
 
-![Computer account moved](images/Active-Directory-Users-and-Computers-showing-the-computer-account-under-default-Computers--container.png)
+🔹 5. GPO Testing and Validation
+To test the "Restrict Control Panel" policy:
+Logged into the domain-joined client using a test domain user.
+Attempted to open the Control Panel — it was accessible initially.
+Launched Command Prompt as Administrator and ran:
+
+`gpupdate /force`
+Waited for the policy update confirmation.
+
+Re-attempted to access Control Panel — access was denied as expected.
+Screenshot Placeholder:
 ![gpupdate force output](images/Command-Prompt-window-showing-gpupdate-force-output.png)
 ![Access Denied on Control Panel](images/Access-Denied-message-on-Control-Panel-after-GPO-application.png)
+✅ Result: GPO successfully applied and functional.
+
 
 ---
 
@@ -193,6 +196,102 @@ Installed FSRM role via Server Manager > Add Roles and Features.
 
 ---
 
+Password Policy Configuration (Group Policy Management)
+In this part of the lab, I configured and enforced a strong password policy for all Active Directory users. This is foundational for securing accounts and protecting against unauthorized access.
+
+🧠 What I Did
+I edited the Default Domain Policy to apply a secure password policy to all domain users. This includes setting:
+
+Minimum password length
+
+Password complexity
+
+Password history
+
+Password expiration (age)
+
+The default minimum password length in Windows Server is 8 characters, which is outdated. I increased it to 12 characters for stronger protection in today's digital environment.
+
+🔧 Steps I Followed
+Open Group Policy Management Console (GPMC)
+
+Start → Administrative Tools → Group Policy Management
+
+Edit the Default Domain Policy
+
+Navigated to:
+Forest > Domains > yourdomain.local > Default Domain Policy
+
+Right-clicked and selected Edit
+
+📸 [Insert Screenshot – Editing Default Domain Policy]
+
+Navigate to Password Policy
+
+Inside Group Policy Management Editor:
+
+Computer Configuration → Policies → Windows Settings → Security Settings → Account Policies → Password Policy
+
+📸 [Insert Screenshot – Password Policy Location]
+
+Configured the following settings:
+
+Enforce password history: 5 passwords remembered
+
+Maximum password age: 90 days
+
+Minimum password length: 12 characters
+
+Password must meet complexity requirements: Enabled
+(Includes uppercase, lowercase, numbers, symbols)
+
+![Password policy settings or Fine-Grained Policy summary](images/Screenshot-of-configured-password-policy-settings.png)
+
+✅ Testing the Policy
+To test if the new policy was enforced:
+
+Created a test user in Active Directory
+
+Checked “User must change password at next logon”
+
+Logged in as the test user and tried setting a weak password: 1234567
+
+![Password Rejected Due to Weakness](images/Password-Rejected-Due-to-FGPP.png)
+
+Then, I set a strong password meeting all complexity rules. It was accepted, confirming that the policy was active.
+
+![Successful Strong Password Change](images/Successful-Strong-Password-Change.png)
+
+🔒 Account Lockout Policy
+Next, I configured the Account Lockout Policy to protect against brute force attacks by locking accounts after a few failed login attempts.
+
+🛠️ Configuration Steps
+Edited the Default Domain Policy again (same steps as above)
+
+Navigated to: Computer Configuration → Policies → Windows Settings → Security Settings → Account Policies → Account Lockout Policy
+
+Set the following:
+
+Account lockout threshold: 3 invalid attempts
+
+Account lockout duration: 30 minutes
+
+Reset account lockout counter after: 30 minutes
+
+📸 [Insert Screenshot – Account Lockout Policy Settings]
+
+✅ Testing Account Lockout
+Logged in as a test user
+
+Entered wrong passwords 3 times
+
+Got an error that the account was locked out
+
+📸 [Insert Screenshot – Account Locked Message]
+
+
+
+
 ### User Rights Assignment
 
 #### What I Did
@@ -206,6 +305,27 @@ Computer Configuration → Policies → Windows Settings → Security Settings �
 ![Remote Desktop Logon Policy](images/Remote-Desktop-Logon-Policy.png)
 
 ---
+
+Fine-Grained Password Policies (FGPP)
+I used Active Directory Administrative Center (ADAC) to configure fine-grained password policies.
+
+🧭 Steps:
+Opened Active Directory Administrative Center from the Start menu.
+
+Navigated to System > Password Settings Container.
+
+Right-clicked and selected New → Password Settings to create a custom policy.
+
+Assigned the policy to a specific security group by selecting Add → Browse → Groups.
+
+Adjusted precedence to ensure the correct policy applies when users belong to multiple groups.
+
+![Admin Policy Settings](images/Opening-Active-Directory-Administrative-Center.png)
+![Admin Policy Settings](images/Navigating-to-Password-Settings-Container.png)
+📸 Screenshot Placeholder: Creating new Password Settings policy
+
+
+
 
 ### Fine-Grained Password Policies (FGPP)
 
