@@ -7,9 +7,36 @@
 - Set the network adapter to "Internal Network."
 - Assigned a static IP address.
 
-![VM Settings](images/AD-installation.png)
+![VM Settings](images/server-creation.png)
 
 ---
+Active Directory Installation
+
+I installed the Active Directory Domain Services (AD DS) role using the Server Manager:
+
+Opened Server Manager > Add Roles and Features.
+
+Selected Role-based or feature-based installation.
+
+Chose the local server as the destination.
+
+Selected Active Directory Domain Services from the server roles.
+
+Completed the wizard and restarted the server when prompted.
+
+After the role installation:
+Opened Server Manager and clicked the notification flag.
+Selected Promote this server to a domain controller.
+Created a new forest named patrick.com
+![VM Settings](images/AD-installation.png)
+Set a Directory Services Restore Mode (DSRM) password.
+Completed the configuration and rebooted the server.
+
+After reboot:
+Verified the server is now a domain controller.
+Logged in as patrick\Administrator.
+Confirmed the presence of Active Directory tools (ADUC, DNS, etc).
+
 
 ### Active Directory: OUs, Users, Groups & Permissions
 
@@ -34,7 +61,7 @@ Created security groups (e.g., IT-SecurityGroup, HR-SGroup) for permission assig
   - Domain Local: Within domain only
 
 ![Security group creation window](images/AD-installation - Copy.png)
-![Group scope options dropdown](images/AD-installation.png)
+
 
 #### Users
 Manually created users `Joshua` and `vboxuser`, and assigned them to OUs and groups under the domain `Patrick.com`.
