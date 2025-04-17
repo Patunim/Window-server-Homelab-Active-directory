@@ -63,20 +63,6 @@ Confirmed the presence of Active Directory tools (ADUC, DNS, etc).
 - Verified connectivity to the domain controller
 - Joined the domain `patrick.com` using domain credentials
 
-![Domain join dialog](images/Win10-Domain-Join.png)  
-![Domain join success](images/Win10-Domain-Join-Success.png)
-
----
-
-### Post-Domain Join Steps
-- Logged in as `joshua@patrick.com`
-- Verified group policies applied (wallpaper, drive, restrictions)
-- Ran `gpupdate /force` and rebooted
-
-![Domain login screen](images/Win10-Domain-Login.png)  
-![gpupdate command run](images/Win10-gpupdate-force.png)  
-![Wallpaper and drive mapping applied](images/Win10-Wallpaper-DriveMap.png)
-
 ---
 
 ### Active Directory: OUs, Users, Groups & Permissions
@@ -165,13 +151,12 @@ Got an error: “Account has been locked out.”
 
 
 #### GPO 2: Drive Mapping
-Automatically maps `S:` to `\\ServerName\SharedFolder`  
 Location: User Configuration → Preferences → Windows Settings → Drive Maps
 
 ![Drive map creation dialog](images/Screenshot-of-drive-map-creation-dialog.png)
 
 #### GPO 3: Desktop Wallpaper
-Applies a uniform wallpaper via `\\ServerName\Wallpapers\company_wallpaper.jpg`
+Applies a uniform wallpaper via 
 
 ![Wallpaper path configuration](images/Screenshot-showing-the-wallpaper-path-configuration.png)
 
@@ -214,7 +199,7 @@ Installed FSRM role via Server Manager > Add Roles and Features.
 ![Custom file screen template](images/FSRM-appearing-under-Administrative-Tools.png)
 
 #### Quota Management
-- Applied 10 GB quota to `C:\Shares\DeptShared`
+- Applied 10 GB quota 
 - Notification at 80% usage
 
 ![Quota path selection](images/Quota-path-selection-for-shared-folder.png)  
@@ -260,7 +245,6 @@ Adjusted precedence
 ![Admin Policy Settings](images/Opening-Active-Directory-Administrative-Center.png)  
 ![Admin Policy Settings](images/Navigating-to-Password-Settings-Container.png)
 
-📸 Screenshot Placeholder: Creating new Password Settings policy
 
 #### Admin Password Policy
 - Name: `Admin_PasswordPolicy`
