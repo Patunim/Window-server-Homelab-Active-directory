@@ -14,7 +14,7 @@ Before beginning AD configuration, I installed Windows Server on a virtual machi
 2. Mounted the Windows Server ISO and completed the installation.
 3. Installed the Active Directory Domain Services (AD DS) role.
 
-![Installation Screenshot](images/Server-creation.png)
+![Installation Screenshot](images/server-creation.png)
 
 ---
 
