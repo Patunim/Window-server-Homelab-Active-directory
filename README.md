@@ -60,7 +60,7 @@ Created security groups (e.g., IT-SecurityGroup, HR-SGroup) for permission assig
   - Universal: Cross-domain (forests)
   - Domain Local: Within domain only
 
-![Security group creation window](images/AD-installation - Copy.png)
+
 
 
 #### Users
@@ -69,38 +69,49 @@ Manually created users `Joshua` and `vboxuser`, and assigned them to OUs and gro
 - Password policy: Complexity, expiration, lockout settings enforced.
 
 ![User creation wizard](images/User-creation-wizard.png)
-![Password policy settings or Fine-Grained Policy summary](images/Screenshot-of-configured-password-policy-settings.png)
+
 ![User group membership tab](images/Navigating-to-Password-Settings-Container.png)
 
 ---
 
 ### Group Policy Objects (GPOs)
+#### GPO Assignments:
+| GPO Name               | Type                  | Linked OU       |
+|------------------------|-----------------------|-----------------|
+| Restrict Control Panel | User Configuration    | USA > Users     |
+| Password Policy        | Computer Configuration| USA > Computers |
+| Drive Mapping          | User Configuration    | USA > Users     |
+| Disable USB Devices    | Computer Configuration| USA > Computers |
+| Set Wallpaper          | User Configuration    | USA > Users     |
 
 #### GPO 1: Password Policy + Account Lockout Policy
 Edited the Default Domain Policy to apply a secure password policy to all domain users in `Patrick.com`:
 - Minimum password length: 12
 - Enforced complexity and history
 - Max age: 90 days
+![Password policy settings or Fine-Grained Policy summary](images/Screenshot-of-configured-password-policy-settings.png)
+
 
 Also configured lockout policy:
+Computer Configuration → Policies → Windows Settings → Security Settings → Account Policies
 - Threshold: 3 failed logins
 - Lockout duration: 30 minutes
 - Reset counter: 30 minutes
-
+![Account Lockout Policy Settings](images/Account-Lockout-Policy-Settings.png)
 Location:
 `Computer Configuration → Policies → Windows Settings → Security Settings → Account Policies`
 
 ![Configured password policy settings](images/Screenshot-of-configured-password-policy-settings.png)
 ![Password Rejected Due to Weakness](images/Password-Rejected-Due-to-FGPP.png)
 ![Successful Strong Password Change](images/Successful-Strong-Password-Change.png)
-![Account Lockout Policy Settings](images/Account-Lockout-Policy-Settings.png)
+
 ![Account Locked Message](images/Account-Locked-Message.png)
 
 #### GPO 2: Drive Mapping
-Automatically maps `S:` to `\\ServerName\SharedFolder`
+Automatically maps S:to \\ServerName\SharedFolder
 
 Location:
-`User Configuration → Preferences → Windows Settings → Drive Maps`
+User Configuration → Preferences → Windows Settings → Drive Maps
 
 ![Drive map creation dialog](images/Screenshot-of-drive-map-creation-dialog.png)
 
@@ -119,14 +130,7 @@ Blocks access to USB drives.
 
 ![Deny all access setting](images/Screenshot-showing-the-deny-all-access-setting.png)
 
-#### GPO Assignments:
-| GPO Name               | Type                  | Linked OU       |
-|------------------------|-----------------------|-----------------|
-| Restrict Control Panel | User Configuration    | USA > Users     |
-| Password Policy        | Computer Configuration| USA > Computers |
-| Drive Mapping          | User Configuration    | USA > Users     |
-| Disable USB Devices    | Computer Configuration| USA > Computers |
-| Set Wallpaper          | User Configuration    | USA > Users     |
+
 
 #### GPO Testing
 After joining the Windows 10 client machine named `client` to the domain and moving its computer object to `USA > Computers`, I tested GPOs via `gpupdate /force`.
