@@ -1,166 +1,215 @@
-# Active Directory Setup and Management
+### VM Setup in VirtualBox
+- Created a new Virtual Machine.
+- Selected the Windows Server 2022 ISO as the installation medium.
+- Assigned 2 GB RAM and 1 CPU core.
+- Installed Windows Server OS with Desktop Experience.
+- Set a secure administrator password.
+- Set the network adapter to "Internal Network."
+- Assigned a static IP address.
 
-## Objective
-This document outlines the process of setting up and managing Organizational Units (OUs), groups, and users within Active Directory (AD) using Windows Server. It serves as a guide to implementing a structured AD environment for organizational needs, including user rights management, resource access, and departmental groupings.
-
----
-
-## Installing Windows Server in VirtualBox
-
-Before beginning AD configuration, I installed Windows Server on a virtual machine using Oracle VirtualBox.
-
-**Steps:**
-1. Created a new VM in VirtualBox with 4GB RAM, 2 cores, and at least 80GB disk.
-2. Mounted the Windows Server ISO and completed the installation.
-3. Installed the Active Directory Domain Services (AD DS) role.
-
-![Installation Screenshot](images/server-creation.png)
-
-Installing Active Directory Domain Services (AD DS)
-After setting up the base Windows Server installation, I proceeded to install Active Directory Domain Services (AD DS) to promote the server to a domain controller.
-
-Here’s what I did:
-
-I launched Server Manager from the Start menu.
-Clicked on Manage > Add Roles and Features to start the setup wizard.
-I selected Role-based or feature-based installation and chose my local server from the list.
-On the Server Roles page, I checked Active Directory Domain Services. A pop-up appeared asking to add required features—I confirmed and continued.
-I completed the wizard and clicked Install. Once the installation finished, a yellow notification bar appeared at the top of Server Manager.
-I clicked Promote this server to a domain controller.
-Since this was a fresh setup, I selected Add a new forest and entered eastcharmer.local as the root domain name.
-On the next screen, I set a secure password for Directory Services Restore Mode (DSRM).
-I accepted the default settings for the rest of the wizard and hit Install.
-The server automatically restarted after installation. Once it came back up, my server was now the domain controller for eastcharmer.local.
-
-[OU Creation](images/AD-installation.png)
----
-
-## 1. Setting Up Organizational Units (OUs)
-I started by organizing the Active Directory environment into various Organizational Units (OUs) to maintain a structured hierarchy within the domain. OUs are essential for delegating administrative control and applying group policies effectively.
-
-### Create Main Organizational Units (OUs)
-Right-click on the domain and select **New > Organizational Unit**. I created the following top-level OUs:
-- USA
-- Europe
-- Asia
-
-![OU Creation](images/Creation-of-USA,-Europe,-Asia-OUs.png)
-
-### Create Sub-OUs for Departmental Groupings
-Inside each main OU, I created sub-OUs for **Users**, **Computers**, and **Servers**.
-
-**Example structure:**
-```
-USA
-├── Users
-├── Computers
-└── Servers
-```
-
-![Sub-OUs](images/Sub-OUs-under-USA.png)
-
-### Organize Resources Within OUs
-User accounts and computer objects were placed in their respective OUs.
-
-![OU Population](images/Populated-OUs-with-user-and-computer-objects.png)
+![VM Settings](images/AD-installation.png)
 
 ---
 
-## 2. Creating Active Directory Groups
-Groups help manage permissions for users and computers. I created both **Security** and **Distribution** groups.
+### Active Directory: OUs, Users, Groups & Permissions
 
-### Security Groups
-Used to manage access to shared resources and assign permissions.
-- Example: `IT Security Group` for IT staff
+#### Organizational Units (OUs)
+I structured Active Directory with top-level OUs per region (USA, Europe, Asia) and created sub-OUs inside each for Users, Computers, and Servers.
 
-![Security Group](images/Opening-Active-Directory-Administrative-Center.png)
+- **Example:**
+  - USA > Users
+  - USA > Computers
+  - USA > Servers
 
-### Distribution Groups
-Used for email communication.
-- Example: `All Employees`, `Finance Team`
+![Creation of USA, Europe, Asia OUs](images/Creation-of-USA,-Europe,-Asia-OUs.png)
+![Sub-OUs under USA](images/Sub-OUs-under-USA.png)
+![Populated OUs with user and computer objects](images/Populated-OUs-with-user-and-computer-objects.png)
 
-### Group Scopes
-I selected scopes based on accessibility:
-- **Global**: For domain-level groups
-- **Universal**: For multi-domain groups
-- **Domain Local**: For local domain resource access
+#### Groups and Group Scopes
+Created security groups (e.g., IT-SecurityGroup, HR-SGroup) for permission assignment.
+
+- Group Scopes:
+  - Global: Same domain
+  - Universal: Cross-domain (forests)
+  - Domain Local: Within domain only
+
+![Security group creation window](images/AD-installation - Copy.png)
+![Group scope options dropdown](images/AD-installation.png)
+
+#### Users
+Manually created users `Joshua` and `vboxuser`, and assigned them to OUs and groups under the domain `Patrick.com`.
+- Example: `joshua@patrick.com`, `vboxuser@patrick.com`
+- Password policy: Complexity, expiration, lockout settings enforced.
+
+![User creation wizard](images/User-creation-wizard.png)
+![Password policy settings or Fine-Grained Policy summary](images/Screenshot-of-configured-password-policy-settings.png)
+![User group membership tab](images/Navigating-to-Password-Settings-Container.png)
 
 ---
 
-## 3. Creating and Managing Users
+### Group Policy Objects (GPOs)
 
-### Create Users
-User accounts were manually created under the appropriate OU.
+#### GPO 1: Password Policy + Account Lockout Policy
+Edited the Default Domain Policy to apply a secure password policy to all domain users in `Patrick.com`:
+- Minimum password length: 12
+- Enforced complexity and history
+- Max age: 90 days
+
+Also configured lockout policy:
+- Threshold: 3 failed logins
+- Lockout duration: 30 minutes
+- Reset counter: 30 minutes
+
+Location:
+`Computer Configuration → Policies → Windows Settings → Security Settings → Account Policies`
+
+![Configured password policy settings](images/Screenshot-of-configured-password-policy-settings.png)
+![Password Rejected Due to Weakness](images/Password-Rejected-Due-to-FGPP.png)
+![Successful Strong Password Change](images/Successful-Strong-Password-Change.png)
+![Account Lockout Policy Settings](images/Account-Lockout-Policy-Settings.png)
+![Account Locked Message](images/Account-Locked-Message.png)
+
+#### GPO 2: Drive Mapping
+Automatically maps `S:` to `\\ServerName\SharedFolder`
+
+Location:
+`User Configuration → Preferences → Windows Settings → Drive Maps`
+
+![Drive map creation dialog](images/Screenshot-of-drive-map-creation-dialog.png)
+
+#### GPO 3: Desktop Wallpaper
+Applies a uniform wallpaper via `\\ServerName\Wallpapers\company_wallpaper.jpg`
+
+![Wallpaper path configuration](images/Screenshot-showing-the-wallpaper-path-configuration.png)
+
+#### GPO 4: Restrict Control Panel Access
+Prevents users from accessing system settings.
+
+![Restriction setting enabled](images/Screenshot-showing-the-restriction-setting-enabled.png)
+
+#### GPO 5: Disable USB Storage Devices
+Blocks access to USB drives.
+
+![Deny all access setting](images/Screenshot-showing-the-deny-all-access-setting.png)
+
+#### GPO Assignments:
+| GPO Name               | Type                  | Linked OU       |
+|------------------------|-----------------------|-----------------|
+| Restrict Control Panel | User Configuration    | USA > Users     |
+| Password Policy        | Computer Configuration| USA > Computers |
+| Drive Mapping          | User Configuration    | USA > Users     |
+| Disable USB Devices    | Computer Configuration| USA > Computers |
+| Set Wallpaper          | User Configuration    | USA > Users     |
+
+#### GPO Testing
+After joining the Windows 10 client machine named `client` to the domain and moving its computer object to `USA > Computers`, I tested GPOs via `gpupdate /force`.
+
+![Computer account moved](images/Active-Directory-Users-and-Computers-showing-the-computer-account-under-default-Computers--container.png)
+![gpupdate force output](images/Command-Prompt-window-showing-gpupdate-force-output.png)
+![Access Denied on Control Panel](images/Access-Denied-message-on-Control-Panel-after-GPO-application.png)
+
+---
+
+### File Server Resource Manager (FSRM)
+
+#### Installation
+Installed FSRM role via Server Manager > Add Roles and Features.
+
+![FSRM installation](images/Add-Roles-and-Features-wizard-with-File-Server-Resource-Manager-selected.png)
+
+#### Quota Management
+- Applied 10 GB quota to `C:\Shares\DeptShared`
+- Notification at 80% usage
+
+![Quota path selection](images/Quota-path-selection-for-shared-folder.png)
+![Custom quota definition](images/Custom-quota-definition-page.png)
+![Notification threshold settings](images/Notification-threshold-settings-screen.png)
+
+#### File Screening
+- Blocked Audio, Video, Executables, Compressed Files, etc.
+- Allowed only Document and Text Files
+- Named policy: `Shared_Dept_FileScreen_Policy`
+
+![File screen path selection](images/FSRM-appearing-under-Administrative-Tools.png)
+![File types selected for blocking](images/File-types-selected-for-blocking.png)
+![Custom file screen template](images/FSRM-appearing-under-Administrative-Tools.png)
+
+---
+
+### User Rights Assignment
+
+#### What I Did
+- Denied log on locally for HR group
+- Allowed RDP for IT group
+
+Location:
+`Computer Configuration → Policies → Windows Settings → Security Settings → Local Policies → User Rights Assignment`
+
+![Deny Log On Locally Policy](images/Deny-Log-On-Locally-Policy.png)
+![Remote Desktop Logon Policy](images/Remote-Desktop-Logon-Policy.png)
+
+---
+
+### Fine-Grained Password Policies (FGPP)
+
+#### Admin Password Policy
+- Name: `Admin_PasswordPolicy`
+- Min length: 15
+- Lockout threshold: 3
+- Group: IT Admins
+
+![Admin Policy Settings](images/Admin-Policy-Settings-Filled-In.png)
+![Adding IT Admins Group](images/Admin-Policy-Settings-Filled-In - Copy.png)
+
+#### Standard Users Policy
+- Name: `StandardUsers_PasswordPolicy`
+- Min length: 10
+- Group: Domain Users
+
+![Standard Users Policy Settings](images/Standard-Users-Policy-Settings.png)
+
+#### Precedence Notes
+- Lower number = higher priority
+- Users in both policies get `Admin_PasswordPolicy`
+
+![Password Rejected Due to FGPP](images/Password-Rejected-Due-to-FGPP.png)
+
+---
+
+### Windows 10 Client Setup and Domain Join
+
+#### VM Creation and Configuration
+- Created a new virtual machine for the Windows 10 client in VirtualBox
+- Installed Windows 10 Pro using ISO
+- Assigned 2 GB RAM, 1 CPU core
+- Set network adapter to **Internal Network**
+
+![Windows 10 VM settings](images/Win10-VM-Settings.png)
+
+#### Network Configuration
+- Assigned static IP in the same subnet as the domain controller
+- Set Preferred DNS to DC IP
 
 **Example:**
-- Name: EastFmer
-- Logon: eastfmer@eastcharmer.local
+- IP: `192.168.10.20`
+- Subnet: `255.255.255.0`
+- Default Gateway: `192.168.10.1`
+- Preferred DNS: `192.168.10.10`
 
-![User Creation](images/User-creation-wizard.png)
+![Windows 10 network settings](images/Win10-Network-Settings.png)
 
-### Automate User Creation
-In production, I’d automate using PowerShell or CSV import to streamline onboarding.
+#### Joining the Domain
+- Verified connectivity to the domain controller
+- Joined the domain `patrick.com` using domain credentials
 
-### Assign Users to Groups
-I added users to their respective department groups.
+![Domain join dialog](images/Win10-Domain-Join.png)
+![Domain join success](images/Win10-Domain-Join-Success.png)
 
----
+#### Post-Domain Join Steps
+- Logged in as `joshua@patrick.com`
+- Verified group policies applied (wallpaper, drive, restrictions)
+- Ran `gpupdate /force` and rebooted
 
-## 4. Assigning Permissions
-I assigned folder/file access and configured rights based on roles.
-
-### Assign Resource Permissions
-- Finance had Modify access to their department folders
-- Others had Read-Only access
-
-![Permissions](images/Screenshot-showing-the-deny-all-access-setting.png)
-
-### User Rights
-User rights were defined for each security group:
-- IT group had elevated access
-- Standard users had limited access
-
-![Policy Settings](images/Standard-Users-Policy-Settings.png)
-![Admin Policy](images/Admin-Policy-Settings-Filled-In.png)
-
----
-
-## 5. Hands-On Activity
-To reinforce my knowledge, I completed a practical activity:
-
-### Activity Steps:
-1. Created test users and groups
-2. Assigned permissions and tested access
-3. Verified login scenarios and access rights
-
-**Examples:**
-- A user with insufficient rights received an **Access Denied** error.
-
-![Access Denied](images/Access-Denied-message-on-Control-Panel-after-GPO-application.png)
-
-- A user received a password rejection due to fine-grained policy.
-
-![Password Rejected](images/Password-Rejected-Due-to-FGPP.png)
-
-- Strong password creation succeeded.
-
-![Strong Password](images/Successful-Strong-Password-Change.png)
-
-- Locked account message observed.
-
-![Account Locked](images/Account-Locked-Message.png)
-
----
-
-## Summary
-This Active Directory setup provides:
-- Structured OU hierarchy
-- Group-based access management
-- Defined user rights and policy enforcement
-
-Further configurations include password policies, GPO testing, and resource access simulations.
-
----
-
-[More screenshots available in the repository under `/images`] 📁
-
+![Domain login screen](images/Win10-Domain-Login.png)
+![gpupdate command run](images/Win10-gpupdate-force.png)
+![Wallpaper and drive mapping applied](images/Win10-Wallpaper-DriveMap.png)
