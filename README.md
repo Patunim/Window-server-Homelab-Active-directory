@@ -9,6 +9,15 @@
 
 ![VM Settings](images/server-creation.png)
 
+### Windows 10 Client Setup and Domain Join
+
+#### VM Creation and Configuration
+- Created a new virtual machine for the Windows 10 client in VirtualBox
+- Installed Windows 10 Pro using ISO
+- Assigned 2 GB RAM, 1 CPU core
+- Set network adapter to **Internal Network**
+
+![Windows 10 VM settings](images/Win10-VM-Settings.png)
 ---
 Active Directory Installation
 
@@ -72,6 +81,24 @@ Manually created users `Joshua` and `vboxuser`, and assigned them to OUs and gro
 
 ![User group membership tab](images/Navigating-to-Password-Settings-Container.png)
 
+#### Network Configuration
+- Assigned static IP in the same subnet as the domain controller
+- Set Preferred DNS to DC IP
+
+**Example:**
+- IP: `192.168.10.20`
+- Subnet: `255.255.255.0`
+- Default Gateway: `192.168.10.1`
+- Preferred DNS: `192.168.10.10`
+
+![Windows 10 network settings](images/Win10-Network-Settings.png)
+
+#### Joining the Domain
+- Verified connectivity to the domain controller
+- Joined the domain `patrick.com` using domain credentials
+
+![Domain join dialog](images/Win10-Domain-Join.png)
+![Domain join success](images/Win10-Domain-Join-Success.png)
 ---
 
 ### Group Policy Objects (GPOs)
@@ -98,10 +125,8 @@ Computer Configuration → Policies → Windows Settings → Security Settings �
 - Lockout duration: 30 minutes
 - Reset counter: 30 minutes
 ![Account Lockout Policy Settings](images/Account-Lockout-Policy-Settings.png)
-Location:
-`Computer Configuration → Policies → Windows Settings → Security Settings → Account Policies`
 
-![Configured password policy settings](images/Screenshot-of-configured-password-policy-settings.png)
+
 ![Password Rejected Due to Weakness](images/Password-Rejected-Due-to-FGPP.png)
 ![Successful Strong Password Change](images/Successful-Strong-Password-Change.png)
 
@@ -147,6 +172,7 @@ After joining the Windows 10 client machine named `client` to the domain and mov
 Installed FSRM role via Server Manager > Add Roles and Features.
 
 ![FSRM installation](images/Add-Roles-and-Features-wizard-with-File-Server-Resource-Manager-selected.png)
+![Custom file screen template](images/FSRM-appearing-under-Administrative-Tools.png)
 
 #### Quota Management
 - Applied 10 GB quota to `C:\Shares\DeptShared`
@@ -163,7 +189,7 @@ Installed FSRM role via Server Manager > Add Roles and Features.
 
 ![File screen path selection](images/FSRM-appearing-under-Administrative-Tools.png)
 ![File types selected for blocking](images/File-types-selected-for-blocking.png)
-![Custom file screen template](images/FSRM-appearing-under-Administrative-Tools.png)
+
 
 ---
 
@@ -174,7 +200,7 @@ Installed FSRM role via Server Manager > Add Roles and Features.
 - Allowed RDP for IT group
 
 Location:
-`Computer Configuration → Policies → Windows Settings → Security Settings → Local Policies → User Rights Assignment`
+Computer Configuration → Policies → Windows Settings → Security Settings → Local Policies → User Rights Assignment
 
 ![Deny Log On Locally Policy](images/Deny-Log-On-Locally-Policy.png)
 ![Remote Desktop Logon Policy](images/Remote-Desktop-Logon-Policy.png)
@@ -190,7 +216,7 @@ Location:
 - Group: IT Admins
 
 ![Admin Policy Settings](images/Admin-Policy-Settings-Filled-In.png)
-![Adding IT Admins Group](images/Admin-Policy-Settings-Filled-In - Copy.png)
+
 
 #### Standard Users Policy
 - Name: `StandardUsers_PasswordPolicy`
@@ -207,34 +233,7 @@ Location:
 
 ---
 
-### Windows 10 Client Setup and Domain Join
 
-#### VM Creation and Configuration
-- Created a new virtual machine for the Windows 10 client in VirtualBox
-- Installed Windows 10 Pro using ISO
-- Assigned 2 GB RAM, 1 CPU core
-- Set network adapter to **Internal Network**
-
-![Windows 10 VM settings](images/Win10-VM-Settings.png)
-
-#### Network Configuration
-- Assigned static IP in the same subnet as the domain controller
-- Set Preferred DNS to DC IP
-
-**Example:**
-- IP: `192.168.10.20`
-- Subnet: `255.255.255.0`
-- Default Gateway: `192.168.10.1`
-- Preferred DNS: `192.168.10.10`
-
-![Windows 10 network settings](images/Win10-Network-Settings.png)
-
-#### Joining the Domain
-- Verified connectivity to the domain controller
-- Joined the domain `patrick.com` using domain credentials
-
-![Domain join dialog](images/Win10-Domain-Join.png)
-![Domain join success](images/Win10-Domain-Join-Success.png)
 
 #### Post-Domain Join Steps
 - Logged in as `joshua@patrick.com`
