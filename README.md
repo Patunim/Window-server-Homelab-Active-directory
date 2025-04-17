@@ -1,3 +1,4 @@
+This lab allowed me to simulate a real-world domain environment where I could confidently configure domain controllers, group policies, and file server roles from scratch. My goal was to better understand how IT administrators manage user access, enforce security policies, and organize resources across a networked environment. I documented every step I took, from setting up the server and client machines to validating group policy effects on a domain-joined computer.
 
 ### VM Setup in VirtualBox
 - Created a new Virtual Machine.
@@ -266,3 +267,18 @@ Adjusted precedence
 - Users in both policies get `Admin_PasswordPolicy`
 
 ![Password Rejected Due to FGPP](images/Password-Rejected-Due-to-FGPP.png)
+
+
+Working through this lab gave me a solid grasp of how Windows Server environments operate behind the scenes. I learned how to:
+
+Promote a server to a domain controller and manage domain-wide configurations.
+
+Create and manage OUs, users, computers, and security groups with proper hierarchy.
+
+Deploy and troubleshoot Group Policy Objects (GPOs) to enforce security standards.
+
+Configure File Server Resource Manager (FSRM) for quota management and file screening.
+
+Implement Fine-Grained Password Policies (FGPP) for more targeted account security.
+
+Join client machines to a domain and verify real-time policy propagation.
