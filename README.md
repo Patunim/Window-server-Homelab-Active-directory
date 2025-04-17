@@ -16,6 +16,23 @@ Before beginning AD configuration, I installed Windows Server on a virtual machi
 
 ![Installation Screenshot](images/server-creation.png)
 
+Installing Active Directory Domain Services (AD DS)
+After setting up the base Windows Server installation, I proceeded to install Active Directory Domain Services (AD DS) to promote the server to a domain controller.
+
+Here’s what I did:
+
+I launched Server Manager from the Start menu.
+Clicked on Manage > Add Roles and Features to start the setup wizard.
+I selected Role-based or feature-based installation and chose my local server from the list.
+On the Server Roles page, I checked Active Directory Domain Services. A pop-up appeared asking to add required features—I confirmed and continued.
+I completed the wizard and clicked Install. Once the installation finished, a yellow notification bar appeared at the top of Server Manager.
+I clicked Promote this server to a domain controller.
+Since this was a fresh setup, I selected Add a new forest and entered eastcharmer.local as the root domain name.
+On the next screen, I set a secure password for Directory Services Restore Mode (DSRM).
+I accepted the default settings for the rest of the wizard and hit Install.
+The server automatically restarted after installation. Once it came back up, my server was now the domain controller for eastcharmer.local.
+
+[OU Creation](images/AD-installation.png)
 ---
 
 ## 1. Setting Up Organizational Units (OUs)
